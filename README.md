@@ -1,4 +1,4 @@
-imageFlask
-==========
+Interaction flask
+=================
 
-Website for image processing
+Website for user interaction (with image in particular)
