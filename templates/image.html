@@ -1,15 +1,38 @@
 <html>
 
 <head>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
-</head>
+<!-- JQuery/AJAX -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
+<!-- CSS -->
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+
+<!-- JQuery/AJAX needed to refresh image -->
+<script type=text/javascript>
+//Script root used instead of url_for directly for dynamic paths
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+//Refresh image on click by capturing a new image
+$(function() {
+  $('#captureImage').bind('click', function() {
+    $.get($SCRIPT_ROOT + '/image/capture',
+      function(data)
+      {
+        //The path returned was computed from the parent.
+        $('img#capture').attr('src', '../'+data.result+'?'+Math.random());
+      });
+    return false;
+  });
+});
+</script>
+
+</head>
 <body>
 
 <h1>Image</h1>
 
-<img src="{{ url_for('static', filename='img1.png') }}" alt="img1"/>
+<img id=capture alt="capture"/>
+<p><a href=# id=captureImage>Capture image</a></p>
 
 </body>
-
 </html>
