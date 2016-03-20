@@ -15,11 +15,24 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 //Refresh image on click by capturing a new image
 $(function() {
   $('#captureImage').bind('click', function() {
-    $.get($SCRIPT_ROOT + '/image/capture',
+    $.getJSON($SCRIPT_ROOT + '/image/capture',
+      //Send resolution to Flask
+      {resolution: $('input[name="resolution"]:checked').val()},
       function(data)
       {
         //The path returned was computed from the parent.
         $('img#capture').attr('src', '../'+data.result+'?'+Math.random());
+
+        //Adjust image width and heith depending on format (4:3 or 16:9)
+        var format = $('input[name="resolution"]:checked').attr('class');
+        if(format == "format_43")
+        {
+          $('img#capture').attr('width', '640').attr('height', '480');
+        }
+        else if(format == "format_169")
+        {
+          $('img#capture').attr('width', '800').attr('height', '450');
+        }
       });
     return false;
   });
@@ -33,6 +46,13 @@ $(function() {
 
 <img id=capture alt="capture"/>
 <p><a href=# id=captureImage>Capture image</a></p>
+
+<p>Resolution:</p>
+<input type="radio" name="resolution" value="640x480" class="format_43" checked> 640x480 4:3<br>
+<input type="radio" name="resolution" value="1296x730" class="format_169"> 1296x730 16:9<br>
+<input type="radio" name="resolution" value="1296x972" class="format_43"> 1296x972 4:3<br>
+<input type="radio" name="resolution" value="2592x1944" class="format_43"> 2592x1944 4:3<br>
+<input type="radio" name="resolution" value="1920x1080" class="format_169"> 1920x1080 16:9<br>
 
 </body>
 </html>
