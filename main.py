@@ -1,10 +1,12 @@
 #Import begin
-import time
 #Flask
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-#Pi camera
-import picamera
+#Camera
+from camera import Camera
 #Import end
+
+# Use Pi camera or not
+use_pi_cam = False
 
 #Utility methods begin
 def isAsInt(iStr):
@@ -20,6 +22,14 @@ def isAsInt(iStr):
 
 #Create Flask app
 app = Flask(__name__)
+
+#Init camera
+cam = Camera.Create(use_pi_cam)
+
+#Make sure camera is ready
+if not cam.isReady():
+  print('Camera is not ready!')
+  exit(-1)
 
 @app.route('/image/display', methods=['GET'])
 def displayImage():
@@ -42,13 +52,11 @@ def captureImage():
     if len(widthHeight) == 2 and isAsInt(widthHeight[0]) and isAsInt(widthHeight[1]):
         res_w = int(widthHeight[0])
         res_h = int(widthHeight[1])
-        print 'Resolution retrieved: %dx%d' % (res_w, res_h)
+        print('Resolution retrieved: %dx%d' % (res_w, res_h))
 
-    #Operate on camera
-    with picamera.PiCamera() as camera:
-        time.sleep(2)
-        camera.resolution = (res_w, res_h)
-        camera.capture(img_path)
+    #Capture from camera
+    if not cam.capture(img_path, res_w, res_h):
+      img_path = ''
 
     #Return path for capture
     return jsonify(result = img_path)
@@ -56,4 +64,4 @@ def captureImage():
 if __name__ == '__main__':
     app.secret_key = 'password'
     app.debug = True
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, use_reloader=False)

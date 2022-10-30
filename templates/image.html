@@ -21,6 +21,16 @@ function captureImage()
     {resolution: $('input[name="resolution"]:checked').val()},
     function(data)
     {
+      if(!data.result)
+      {
+        $('p#error').text('An error was encontered!')
+        return
+      }
+      else
+      {
+        $('p#error').empty()
+      }
+
       //The path returned was computed from the parent.
       $('img#capture').attr('src', '../'+data.result+'?'+Math.random());
 
@@ -64,6 +74,8 @@ $(document).ready(function()
 <input type="radio" name="resolution" value="1296x972" class="format_43"> 1296x972 4:3<br>
 <input type="radio" name="resolution" value="2592x1944" class="format_43"> 2592x1944 4:3<br>
 <input type="radio" name="resolution" value="1920x1080" class="format_169"> 1920x1080 16:9<br>
+
+<p id="error"></p>
 
 </body>
 </html>
